@@ -24,6 +24,13 @@ class DocxReader:
             dictionary[IMG_PROPERTY] = img_routes[0]
         return dictionary
 
+    def make_dictionary(self, paragraphs):
+        dictionary = {}
+        for paragraph in filter(lambda p: p, paragraphs):
+            key, value = paragraph.split(":")
+            dictionary[key.strip()] = value.strip()
+        return dictionary
+
     def extract_images(self, document, dni):
         img_routes = []
         for shape in document.inline_shapes:
@@ -38,13 +45,6 @@ class DocxReader:
             with open(img_route, "wb") as f:
                 f.write(img_data)
         return img_routes
-
-    def make_dictionary(self, paragraphs):
-        dictionary = {}
-        for paragraph in filter(lambda p: p, paragraphs):
-            key, value = paragraph.split(":")
-            dictionary[key.strip()] = value.strip()
-        return dictionary
 
     def get_image(self, document, img_id):
         img_name = os.path.basename(document.part.related_parts[img_id].partname)

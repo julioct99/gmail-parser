@@ -6,7 +6,8 @@ import base64
 import os
 import email
 
-class GmailParser():
+
+class GmailParser:
     def __init__(self):
         f = open(PASSWORD_FILE)
         self.password = f.read()
@@ -14,64 +15,72 @@ class GmailParser():
 
     def parse_emails(self):
         try:
-            imapSession = imaplib.IMAP4_SSL("imap.gmail.com")
-            typ, accountDetails = imapSession.login(self.username, self.password)
-            if typ != "OK":
-                print("Not able to sign in!")
-                raise
-
-            imapSession.select()
-            typ, data = imapSession.search(None, "UNSEEN")
-            if typ != "OK":
-                print("Error searching Inbox.")
-                raise
-
-            unseen_mails = data[0].split()
-            print(f"New (unseen) emails discovered for {self.username}: [ {len(unseen_mails)} ] ")
-
-            for msgId in data[0].split():
-                typ, data = imapSession.fetch(msgId, "(RFC822)")
-                raw_email = data[0][1]
-
-                # converts byte literal to string removing b''
-                raw_email_string = raw_email.decode("utf-8")
-                email_message = email.message_from_string(raw_email_string)
-
-                # downloading attachments
-                for part in email_message.walk():
-                    if part.get_content_maintype() == "multipart":
-                        continue
-                    if part.get("Content-Disposition") is None:
-                        continue
-                    fileName = part.get_filename()
-
-                    if bool(fileName):
-                        if (fileName.endswith('.docx')):
-                            filePath = os.path.join(DOCS_FOLDER, fileName)
-                        else:
-                            filePath = os.path.join(ATTACHMENTS_FOLDER, fileName)
-
-                        if not os.path.isfile(filePath):
-                            fp = open(filePath, "wb")
-                            fp.write(part.get_payload(decode=True))
-                            fp.close()
-
-            print('Done')
-
+            imap_session = self.imap_connect()
         except:
-            print("Error")
+            print("Error connecting")
 
+        try:
+            unseen_mails = self.get_mails(imap_session)
+            print(
+                f"New (unseen) emails discovered for {self.username}: [{len(unseen_mails)}] "
+            )
+            for msg_id in unseen_mails:
+                email_message = self.get_email_message(imap_session, msg_id)
+                for part in email_message.walk():
+                    if not self.is_attachment(part):
+                        continue
+                    self.write_attachment(part)
+            print("Done")
+        except:
+            print("Error parsing emails")
         finally:
-            try:
-                imapSession.close()
-                print(f"Session clossed for {self.username}")
-            except:
-                print(f"Error closing session for {self.username}")
+            self.close_session(imap_session)
 
-            print("Logging out...")
-            imapSession.logout()
+    def imap_connect(self):
+        imap_session = imaplib.IMAP4_SSL("imap.gmail.com")
+        typ, accountDetails = imap_session.login(self.username, self.password)
+        if typ != "OK":
+            print("Not able to sign in!")
+            raise
+        return imap_session
 
+    def get_mails(self, imap_session):
+        imap_session.select()
+        typ, data = imap_session.search(None, "UNSEEN")
+        if typ != "OK":
+            print("Error searching Inbox.")
+            raise
+        return data[0].split()
 
-if __name__ == "__main__":
-    gm_parser = GmailParser()
-    gm_parser.parse_emails()
+    def get_email_message(self, imap_session, message_id):
+        typ, data = imap_session.fetch(message_id, "(RFC822)")
+        raw_email = data[0][1]
+        raw_email_string = raw_email.decode("utf-8")
+        return email.message_from_string(raw_email_string)
+
+    def is_attachment(self, part):
+        is_multipart = part.get_content_maintype() == "multipart"
+        has_content_disposition = part.get("Content-Disposition") is not None
+        return has_content_disposition and not is_multipart
+
+    def write_attachment(self, attachment):
+        filename = attachment.get_filename()
+        if bool(filename):
+            if filename.endswith(".docx"):
+                filePath = os.path.join(DOCS_FOLDER, filename)
+            else:
+                filePath = os.path.join(ATTACHMENTS_FOLDER, filename)
+            if not os.path.isfile(filePath):
+                fp = open(filePath, "wb")
+                fp.write(attachment.get_payload(decode=True))
+                fp.close()
+
+    def close_session(self, imap_session):
+        try:
+            imap_session.close()
+            print(f"Session clossed for {self.username}")
+        except:
+            print(f"Error closing session for {self.username}")
+        print("Logging out...")
+        imap_session.logout()
+

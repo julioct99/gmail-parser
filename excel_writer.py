@@ -1,3 +1,4 @@
+from constants import IMG_PROPERTY
 import xlsxwriter
 
 class ExcelWriter:
@@ -15,6 +16,10 @@ class ExcelWriter:
     def write_worksheet(self, worksheet, dictionary):
         row, col = 0, 0
         for key, value in dictionary.items():
-             worksheet.write(row, col, key)
-             worksheet.write(row, col + 1, value)
-             row += 1           
+            if (key == IMG_PROPERTY):
+                worksheet.write(row, col, key)
+                worksheet.write_url(row, col + 1, value)
+            else:
+                worksheet.write(row, col, key)
+                worksheet.write(row, col + 1, value)
+            row += 1           

@@ -9,13 +9,14 @@ if not os.path.exists(ATTACHMENTS_FOLDER):
     os.makedirs(ATTACHMENTS_FOLDER)
     os.makedirs(DOCS_FOLDER)
     os.makedirs(EXCEL_FOLDER)
+    os.makedirs(IMAGES_FOLDER)
 
 print('\n*** [PARSING EMAILS] ***')
 email_parser = GmailParser()
 email_parser.parse_emails()
 
 print(f"\n\n*** [READING DOCUMENTS IN {DOCS_FOLDER}] ***")
-docx_reader = DocxReader(DOCS_FOLDER)
+docx_reader = DocxReader(DOCS_FOLDER, IMAGES_FOLDER)
 dictionaries = docx_reader.parse_docx_files()
 print(f"{len(dictionaries)} {'document' if len(dictionaries) == 1 else 'documents'} found.")
 

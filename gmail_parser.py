@@ -8,7 +8,7 @@ import email
 
 class GmailParser():
     def __init__(self):
-        f = open('pass.txt')
+        f = open(PASSWORD_FILE)
         self.password = f.read()
         self.username = "juliotestemail00@gmail.com"
 

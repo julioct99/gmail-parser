@@ -1,9 +1,9 @@
-from constants import IMG_PROPERTY
+from constants import IMG_PROPERTY, EXCEL_FOLDER
 import xlsxwriter
 
 class ExcelWriter:
-    def __init__(self, route, dictionaries):
-        self.route = route
+    def __init__(self, dictionaries):
+        self.route = EXCEL_FOLDER
         self.dictionaries = dictionaries
     
     def write_excel_files(self):

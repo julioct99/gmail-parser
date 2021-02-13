@@ -4,9 +4,9 @@ import docx
 import os
  
 class DocxReader:
-    def __init__(self, docs_route, imgs_route):
-        self.docs_route = docs_route
-        self.imgs_route = imgs_route
+    def __init__(self):
+        self.docs_route = DOCS_FOLDER
+        self.imgs_route = IMAGES_FOLDER
         self.dictionaries = []
 
     def parse_docx_files(self):

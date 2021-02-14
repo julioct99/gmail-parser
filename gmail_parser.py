@@ -8,10 +8,10 @@ import email
 
 
 class GmailParser:
-    def __init__(self):
+    def __init__(self, username):
         f = open(PASSWORD_FILE)
         self.password = f.read()
-        self.username = "juliotestemail00@gmail.com"
+        self.username = username
         self.write_route = TMP_FOLDER
 
     def parse_emails(self):

@@ -1,5 +1,4 @@
 from constants import *
-import docx2txt
 import docx
 import os
 import shutil
@@ -21,8 +20,6 @@ class DocxReader:
                 new_doc_route = f"{self.tmp_route}/{dictionary['dni']}.docx"
                 os.rename(doc_route, new_doc_route)
                 shutil.move(new_doc_route, self.docs_route)
-        else:
-            print('No documents found to read')
         
         return self.dictionaries
 

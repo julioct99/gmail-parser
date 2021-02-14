@@ -20,7 +20,7 @@ class DocxReader:
                 new_doc_route = f"{self.tmp_route}/{dictionary['dni']}.docx"
                 os.rename(doc_route, new_doc_route)
                 shutil.move(new_doc_route, self.docs_route)
-        
+
         return self.dictionaries
 
     def parse_docx(self, document):
@@ -65,4 +65,3 @@ class DocxReader:
     def get_file_extension(self, filename):
         _, extension = os.path.splitext(filename)
         return extension
-

@@ -9,10 +9,10 @@ import email
 
 class GmailParser:
     def __init__(self, username):
-        f = open(PASSWORD_FILE)
-        self.password = f.read()
         self.username = username
         self.write_route = TMP_FOLDER
+        with open(PASSWORD_FILE) as f:
+            self.password = f.read()
 
     def parse_emails(self):
         try:
@@ -25,7 +25,7 @@ class GmailParser:
             print(
                 f"New (unseen) emails discovered for {self.username}: [{len(unseen_mails)}] "
             )
-            if (len(unseen_mails) > 0):
+            if len(unseen_mails) > 0:
                 os.makedirs(self.write_route)
                 for msg_id in unseen_mails:
                     email_message = self.get_email_message(imap_session, msg_id)
@@ -86,4 +86,3 @@ class GmailParser:
             print(f"Error closing session for {self.username}")
         print("Logging out...")
         imap_session.logout()
-

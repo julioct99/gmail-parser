@@ -2,18 +2,28 @@ from constants import *
 import docx2txt
 import docx
 import os
+import shutil
 
 
 class DocxReader:
     def __init__(self):
         self.docs_route = DOCS_FOLDER
+        self.tmp_route = TMP_FOLDER
         self.imgs_route = IMAGES_FOLDER
         self.dictionaries = []
 
     def parse_docx_files(self):
-        for document in os.listdir(self.docs_route):
-            dictionary = self.parse_docx(docx.Document(f"{self.docs_route}/{document}"))
-            self.dictionaries.append(dictionary)
+        if os.path.exists(self.tmp_route):
+            for document in os.listdir(self.tmp_route):
+                doc_route = f"{self.tmp_route}/{document}"
+                dictionary = self.parse_docx(docx.Document(doc_route))
+                self.dictionaries.append(dictionary)
+                new_doc_route = f"{self.tmp_route}/{dictionary['dni']}.docx"
+                os.rename(doc_route, new_doc_route)
+                shutil.move(new_doc_route, self.docs_route)
+        else:
+            print('No documents found to read')
+        
         return self.dictionaries
 
     def parse_docx(self, document):
@@ -51,6 +61,9 @@ class DocxReader:
         img_data = document.part.related_parts[img_id]._blob
         extension = self.get_file_extension(img_name)
         return img_name, img_data, extension
+
+    def move_document_to(self, document, folder):
+        shutil.move(document, folder)
 
     def get_file_extension(self, filename):
         _, extension = os.path.splitext(filename)

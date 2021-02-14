@@ -12,6 +12,7 @@ class GmailParser:
         f = open(PASSWORD_FILE)
         self.password = f.read()
         self.username = "juliotestemail00@gmail.com"
+        self.write_route = TMP_FOLDER
 
     def parse_emails(self):
         try:
@@ -24,12 +25,14 @@ class GmailParser:
             print(
                 f"New (unseen) emails discovered for {self.username}: [{len(unseen_mails)}] "
             )
-            for msg_id in unseen_mails:
-                email_message = self.get_email_message(imap_session, msg_id)
-                for part in email_message.walk():
-                    if not self.is_attachment(part):
-                        continue
-                    self.write_attachment(part)
+            if (len(unseen_mails) > 0):
+                os.makedirs(self.write_route)
+                for msg_id in unseen_mails:
+                    email_message = self.get_email_message(imap_session, msg_id)
+                    for part in email_message.walk():
+                        if not self.is_attachment(part):
+                            continue
+                        self.write_attachment(part)
             print("Done")
         except:
             print("Error parsing emails")
@@ -67,7 +70,7 @@ class GmailParser:
         filename = attachment.get_filename()
         if bool(filename):
             if filename.endswith(".docx"):
-                filePath = os.path.join(DOCS_FOLDER, filename)
+                filePath = os.path.join(self.write_route, filename)
             else:
                 filePath = os.path.join(ATTACHMENTS_FOLDER, filename)
             if not os.path.isfile(filePath):

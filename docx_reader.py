@@ -20,7 +20,6 @@ class DocxReader:
                 new_doc_route = f"{self.tmp_route}/{dictionary['dni']}.docx"
                 os.rename(doc_route, new_doc_route)
                 shutil.move(new_doc_route, self.docs_route)
-
         return self.dictionaries
 
     def parse_docx(self, document):
@@ -58,9 +57,6 @@ class DocxReader:
         img_data = document.part.related_parts[img_id]._blob
         extension = self.get_file_extension(img_name)
         return img_name, img_data, extension
-
-    def move_document_to(self, document, folder):
-        shutil.move(document, folder)
 
     def get_file_extension(self, filename):
         _, extension = os.path.splitext(filename)

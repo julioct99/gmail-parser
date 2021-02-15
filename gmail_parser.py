@@ -1,8 +1,5 @@
 from constants import *
 import imaplib
-import getpass
-import imaplib
-import base64
 import os
 import email
 

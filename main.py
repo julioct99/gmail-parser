@@ -11,7 +11,7 @@ if not os.path.exists(ATTACHMENTS_FOLDER):
     os.makedirs(DOCS_FOLDER)
     os.makedirs(EXCEL_FOLDER)
     os.makedirs(IMAGES_FOLDER)
-
+    
 print("\n*** [PARSING EMAILS] ***")
 email_parser = GmailParser("juliotestemail00@gmail.com")
 email_parser.parse_emails()

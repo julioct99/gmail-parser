@@ -17,7 +17,7 @@ class ExcelWriter:
         worksheet = workbook['Sheet1']
         if self.dictionaries:
             self.write_headers(worksheet)
-            row = self.get_last_row() if os.path.exists(self.workbook) else 1
+            row = (worksheet.max_row + 1) if os.path.exists(self.workbook) else 1
             for dictionary in self.dictionaries:
                 self.write_to_worksheet(worksheet, row, dictionary)
                 row += 1
@@ -34,11 +34,6 @@ class ExcelWriter:
         for header in headers:
             worksheet.cell(row=1, column=col, value=header.upper())
             col += 1
-
-    def get_last_row(self):
-        workbook = openpyxl.load_workbook(filename=self.workbook)
-        worksheet = workbook['Sheet1']
-        return worksheet.max_row + 1
 
     def write_to_worksheet(self, worksheet, row, dictionary):
         col = 1

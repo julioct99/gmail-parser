@@ -1,7 +1,5 @@
 pass.txt
-
 attachments
-
 .pytest_cache
-
 __pycache__
+.vscode

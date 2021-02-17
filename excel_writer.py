@@ -16,8 +16,9 @@ class ExcelWriter:
         workbook = openpyxl.load_workbook(filename=self.workbook)
         worksheet = workbook['Sheet1']
         if self.dictionaries:
-            self.write_headers(worksheet)
-            row = (worksheet.max_row + 1) if os.path.exists(self.workbook) else 1
+            row = worksheet.max_row + 1
+            if row == 2:
+                self.write_headers(worksheet)
             for dictionary in self.dictionaries:
                 self.write_to_worksheet(worksheet, row, dictionary)
                 row += 1
@@ -34,6 +35,7 @@ class ExcelWriter:
         for header in headers:
             worksheet.cell(row=1, column=col, value=header.upper())
             col += 1
+        worksheet.cell(row=1, column=col, value=IMG_PROPERTY.upper())
 
     def write_to_worksheet(self, worksheet, row, dictionary):
         col = 1
